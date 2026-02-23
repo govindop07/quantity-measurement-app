@@ -2,18 +2,14 @@ package bridgeLabz.quantity_measurement;
 
 public class Length {
 
-	// Instance variables
+	// Value and unit (immutable)
 	private final double value;
 	private final LengthUnit unit;
 
-	// Enum representing supported length units
-	// Conversion factor is relative to base unit (INCHES)
+	// Base unit = INCHES
 	public enum LengthUnit {
 
-		FEET(12.0), // 1 foot = 12 inches
-		INCHES(1.0), // Base unit
-		YARDS(36.0), // 1 yard = 36 inches
-		CENTIMETERS(0.393701); // 1 cm = 0.393701 inches
+		FEET(12.0), INCHES(1.0), YARDS(36.0), CENTIMETERS(0.393701);
 
 		private final double conversionFactor;
 
@@ -41,86 +37,98 @@ public class Length {
 		this.unit = unit;
 	}
 
-	// Static conversion API (UC5)
-	public static double convert(double value, LengthUnit sourceUnit, LengthUnit targetUnit) {
+	// Convert raw value between units (UC5)
+	public static double convert(double value, LengthUnit from, LengthUnit to) {
 
 		if (!Double.isFinite(value)) {
 			throw new IllegalArgumentException("Value must be finite.");
 		}
 
-		if (sourceUnit == null || targetUnit == null) {
-			throw new IllegalArgumentException("Units must not be null.");
+		if (from == null || to == null) {
+			throw new IllegalArgumentException("Units cannot be null.");
 		}
 
-		// Convert to base unit (inches)
-		double baseValue = value * sourceUnit.getConversionFactor();
+		double base = value * from.getConversionFactor();
+		double result = base / to.getConversionFactor();
 
-		// Convert to target unit
-		double converted = baseValue / targetUnit.getConversionFactor();
-
-		// Round to 2 decimal places
-		return Math.round(converted * 100.0) / 100.0;
+		return round(result);
 	}
 
-	// Convert current object to target unit
+	// Convert this object
 	public Length convertTo(LengthUnit targetUnit) {
-
-		double convertedValue = convert(this.value, this.unit, targetUnit);
-
-		return new Length(convertedValue, targetUnit);
+		double converted = convert(this.value, this.unit, targetUnit);
+		return new Length(converted, targetUnit);
 	}
 
-	// Convert to base unit internally (inches)
-	private double convertToBaseUnit() {
-		double baseValue = value * unit.getConversionFactor();
-		return Math.round(baseValue * 100.0) / 100.0;
+	// Convert to base unit (inches)
+	private double toBaseUnit() {
+		return value * unit.getConversionFactor();
 	}
 
-	// Equality check
+	// Common private utility for UC6 & UC7
+	private Length addAndConvert(Length other, LengthUnit targetUnit) {
+
+		if (other == null) {
+			throw new IllegalArgumentException("Length to add cannot be null.");
+		}
+
+		if (targetUnit == null) {
+			throw new IllegalArgumentException("Target unit cannot be null.");
+		}
+
+		double base1 = this.toBaseUnit();
+		double base2 = other.toBaseUnit();
+
+		double sumBase = base1 + base2;
+
+		double finalValue = sumBase / targetUnit.getConversionFactor();
+
+		return new Length(round(finalValue), targetUnit);
+	}
+
+	// UC6: add, result in first operand unit
+	public Length add(Length other) {
+		return addAndConvert(other, this.unit);
+	}
+
+	// UC7: add with explicit target unit
+	public Length add(Length other, LengthUnit targetUnit) {
+		return addAndConvert(other, targetUnit);
+	}
+
+	// Equality (based on base unit)
 	@Override
 	public boolean equals(Object o) {
 
 		if (this == o)
 			return true;
-
 		if (o == null || getClass() != o.getClass())
 			return false;
 
 		Length other = (Length) o;
 
-		return Double.compare(this.convertToBaseUnit(), other.convertToBaseUnit()) == 0;
+		return Double.compare(round(this.toBaseUnit()), round(other.toBaseUnit())) == 0;
 	}
 
 	@Override
 	public int hashCode() {
-		return Double.hashCode(convertToBaseUnit());
+		return Double.hashCode(round(toBaseUnit()));
 	}
 
-	// UC6: Add another length
-	// Result is returned in the unit of the first operand
-	public Length add(Length thatLength) {
-
-		if (thatLength == null) {
-			throw new IllegalArgumentException("Length to add cannot be null.");
-		}
-
-		// Convert both to base unit (inches)
-		double base1 = this.convertToBaseUnit();
-		double base2 = thatLength.convertToBaseUnit();
-
-		// Add
-		double sumInBase = base1 + base2;
-
-		// Convert sum back to unit of first operand
-		double finalValue = sumInBase / this.unit.getConversionFactor();
-
-		finalValue = Math.round(finalValue * 100.0) / 100.0;
-
-		return new Length(finalValue, this.unit);
+	private static double round(double value) {
+		return Math.round(value * 100.0) / 100.0;
 	}
 
 	@Override
 	public String toString() {
-		return value + " " + unit;
+		return "Quantity(" + value + ", " + unit + ")";
+	}
+
+	public double getValue() {
+		return value;
+	}
+
+	public LengthUnit getUnit() {
+		return unit;
 	}
 }

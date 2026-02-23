@@ -2,52 +2,46 @@ package bridgeLabz.quantity_measurement;
 
 public class QuantityMeasurementApp {
 
-	// Equality demonstration
-	public static boolean demonstrateLengthEquality(Length length1, Length length2) {
-		return length1.equals(length2);
+	// Equality demo
+	public static boolean demonstrateLengthEquality(Length l1, Length l2) {
+		return l1.equals(l2);
 	}
 
-	// Comparison using raw values
-	public static boolean demonstrateLengthComparison(double value1, Length.LengthUnit unit1, double value2,
-			Length.LengthUnit unit2) {
+	// Raw value comparison
+	public static boolean demonstrateLengthComparison(double v1, Length.LengthUnit u1, double v2,
+			Length.LengthUnit u2) {
 
-		Length l1 = new Length(value1, unit1);
-		Length l2 = new Length(value2, unit2);
-
-		return demonstrateLengthEquality(l1, l2);
+		return demonstrateLengthEquality(new Length(v1, u1), new Length(v2, u2));
 	}
 
-	// Conversion using raw values (UC5)
-	public static double demonstrateLengthConversion(double value, Length.LengthUnit fromUnit,
-			Length.LengthUnit toUnit) {
+	// Conversion demo
+	public static double demonstrateLengthConversion(double value, Length.LengthUnit from, Length.LengthUnit to) {
 
-		return Length.convert(value, fromUnit, toUnit);
+		return Length.convert(value, from, to);
 	}
 
-	// Conversion using Length object
-	public static Length demonstrateLengthConversion(Length length, Length.LengthUnit toUnit) {
+	// Object conversion demo
+	public static Length demonstrateLengthConversion(Length length, Length.LengthUnit to) {
 
-		return length.convertTo(toUnit);
+		return length.convertTo(to);
 	}
 
-	// UC6: Addition demonstration
-	public static Length demonstrateLengthAddition(Length length1, Length length2) {
-
-		if (length1 == null || length2 == null) {
-			throw new IllegalArgumentException("Lengths cannot be null.");
-		}
-
-		return length1.add(length2);
+	// UC6 addition
+	public static Length demonstrateLengthAddition(Length l1, Length l2) {
+		return l1.add(l2);
 	}
 
-	// Main method
+	// UC7 addition with explicit target unit
+	public static Length demonstrateLengthAddition(Length l1, Length l2, Length.LengthUnit targetUnit) {
+
+		return l1.add(l2, targetUnit);
+	}
+
 	public static void main(String[] args) {
 
-		Length length1 = new Length(1.0, Length.LengthUnit.FEET);
-		Length length2 = new Length(12.0, Length.LengthUnit.INCHES);
+		Length l1 = new Length(1.0, Length.LengthUnit.FEET);
+		Length l2 = new Length(12.0, Length.LengthUnit.INCHES);
 
-		Length result = demonstrateLengthAddition(length1, length2);
-
-		System.out.println("Result: " + result);
+		System.out.println(demonstrateLengthAddition(l1, l2, Length.LengthUnit.YARDS));
 	}
 }
