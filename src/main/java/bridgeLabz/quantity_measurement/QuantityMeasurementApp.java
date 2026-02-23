@@ -2,12 +2,12 @@ package bridgeLabz.quantity_measurement;
 
 public class QuantityMeasurementApp {
 
-	// Demonstrates equality check.
+	// Equality demonstration
 	public static boolean demonstrateLengthEquality(Length length1, Length length2) {
 		return length1.equals(length2);
 	}
 
-	// Demonstrates comparison using raw values.
+	// Comparison using raw values
 	public static boolean demonstrateLengthComparison(double value1, Length.LengthUnit unit1, double value2,
 			Length.LengthUnit unit2) {
 
@@ -17,26 +17,37 @@ public class QuantityMeasurementApp {
 		return demonstrateLengthEquality(l1, l2);
 	}
 
-	// Static numeric conversion API
+	// Conversion using raw values (UC5)
 	public static double demonstrateLengthConversion(double value, Length.LengthUnit fromUnit,
 			Length.LengthUnit toUnit) {
 
 		return Length.convert(value, fromUnit, toUnit);
 	}
 
-	// Overloaded conversion method using Length instance
+	// Conversion using Length object
 	public static Length demonstrateLengthConversion(Length length, Length.LengthUnit toUnit) {
 
 		return length.convertTo(toUnit);
 	}
 
-	// Main method for standalone testing
+	// UC6: Addition demonstration
+	public static Length demonstrateLengthAddition(Length length1, Length length2) {
+
+		if (length1 == null || length2 == null) {
+			throw new IllegalArgumentException("Lengths cannot be null.");
+		}
+
+		return length1.add(length2);
+	}
+
+	// Main method
 	public static void main(String[] args) {
 
-		System.out.println(demonstrateLengthConversion(1.0, Length.LengthUnit.FEET, Length.LengthUnit.INCHES)); // 12.0
+		Length length1 = new Length(1.0, Length.LengthUnit.FEET);
+		Length length2 = new Length(12.0, Length.LengthUnit.INCHES);
 
-		System.out.println(demonstrateLengthConversion(3.0, Length.LengthUnit.YARDS, Length.LengthUnit.FEET)); // 9.0
+		Length result = demonstrateLengthAddition(length1, length2);
 
-		System.out.println(demonstrateLengthConversion(36.0, Length.LengthUnit.INCHES, Length.LengthUnit.YARDS)); // 1.0
+		System.out.println("Result: " + result);
 	}
 }

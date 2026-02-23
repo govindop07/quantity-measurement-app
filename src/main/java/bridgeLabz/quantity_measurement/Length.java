@@ -1,18 +1,17 @@
 package bridgeLabz.quantity_measurement;
 
-// A generic value object representing a length with unit support. Base unit for conversion is inches.
-
 public class Length {
 
+	// Instance variables
 	private final double value;
 	private final LengthUnit unit;
 
-//	 Enum representing supported length units. Conversion factor is defined relative to base unit.
-
+	// Enum representing supported length units
+	// Conversion factor is relative to base unit (INCHES)
 	public enum LengthUnit {
 
 		FEET(12.0), // 1 foot = 12 inches
-		INCHES(1.0), // base unit
+		INCHES(1.0), // Base unit
 		YARDS(36.0), // 1 yard = 36 inches
 		CENTIMETERS(0.393701); // 1 cm = 0.393701 inches
 
@@ -42,8 +41,7 @@ public class Length {
 		this.unit = unit;
 	}
 
-	// Static conversion API
-
+	// Static conversion API (UC5)
 	public static double convert(double value, LengthUnit sourceUnit, LengthUnit targetUnit) {
 
 		if (!Double.isFinite(value)) {
@@ -54,7 +52,7 @@ public class Length {
 			throw new IllegalArgumentException("Units must not be null.");
 		}
 
-		// Normalize to base unit (inches)
+		// Convert to base unit (inches)
 		double baseValue = value * sourceUnit.getConversionFactor();
 
 		// Convert to target unit
@@ -64,25 +62,21 @@ public class Length {
 		return Math.round(converted * 100.0) / 100.0;
 	}
 
-	// Instance conversion method
+	// Convert current object to target unit
 	public Length convertTo(LengthUnit targetUnit) {
-
-		if (targetUnit == null) {
-			throw new IllegalArgumentException("Target unit cannot be null.");
-		}
 
 		double convertedValue = convert(this.value, this.unit, targetUnit);
 
 		return new Length(convertedValue, targetUnit);
 	}
 
-	// Convert to base unit (inches) internally for equality comparison
+	// Convert to base unit internally (inches)
 	private double convertToBaseUnit() {
 		double baseValue = value * unit.getConversionFactor();
 		return Math.round(baseValue * 100.0) / 100.0;
 	}
 
-	// Equality comparison
+	// Equality check
 	@Override
 	public boolean equals(Object o) {
 
@@ -102,8 +96,31 @@ public class Length {
 		return Double.hashCode(convertToBaseUnit());
 	}
 
+	// UC6: Add another length
+	// Result is returned in the unit of the first operand
+	public Length add(Length thatLength) {
+
+		if (thatLength == null) {
+			throw new IllegalArgumentException("Length to add cannot be null.");
+		}
+
+		// Convert both to base unit (inches)
+		double base1 = this.convertToBaseUnit();
+		double base2 = thatLength.convertToBaseUnit();
+
+		// Add
+		double sumInBase = base1 + base2;
+
+		// Convert sum back to unit of first operand
+		double finalValue = sumInBase / this.unit.getConversionFactor();
+
+		finalValue = Math.round(finalValue * 100.0) / 100.0;
+
+		return new Length(finalValue, this.unit);
+	}
+
 	@Override
 	public String toString() {
-		return String.format("%.2f %s", value, unit);
+		return value + " " + unit;
 	}
 }
